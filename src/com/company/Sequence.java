@@ -86,9 +86,9 @@ public class Sequence{
     public int getNumberOfWords(){
         int length = 0;
         for (int num: connections) {
-            length += num ;
+            length += 10 - num ;
         }
-        return length + (10 - connections.get(connections.size()-1));
+        return length;
     }
 
     protected void CalculateUnique(){

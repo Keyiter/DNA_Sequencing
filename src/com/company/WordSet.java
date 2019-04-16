@@ -100,6 +100,8 @@ public class WordSet {
 
                 }
 
+               if(max - 9 > temp)
+                    continue;
                 for(int k=0;k < wordSet.size();k++){
                     temp = conTemp;
                     if(i != k)
@@ -114,6 +116,8 @@ public class WordSet {
                         conMax = conTemp;
                         index = i;
                     }
+                   if(max >= 18)
+                       return new WordWeightPair(18,9, wordSet.get(i));
                 }
 
 
@@ -131,7 +135,7 @@ public class WordSet {
         if(found)
             retVal = new WordWeightPair(max,conMax, wordSet.get(index));
         else if(!tabuList.isEmpty())
-            retVal = new WordWeightPair(max,conMax, wordSet.get(tabuList.get(0)));
+            retVal = new WordWeightPair(max/3,conMax, wordSet.get(tabuList.get(0)));
         else
              retVal = new WordWeightPair(-1,-1,"");
 

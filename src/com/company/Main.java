@@ -13,18 +13,23 @@ public class Main {
        // System.out.println("Insert File name: ");
         String filename = "data.txt"; //scan.nextLine();
        // System.out.println("Insert Max Sequence Length ");
-        int maxLength = 1000; //scan.nextInt();
+        int maxLength = 300; //scan.nextInt();
 
         SequenceController sequence = new SequenceController(filename);
 
+        long start = System.currentTimeMillis();
+
         sequence.MakeGreedySearch(maxLength);
 
-        //find random first
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+
+        System.out.println("Processing time: " + timeElapsed/1000.f);
 
         sequence.PrintUniqueWords();
         sequence.PrintNumberOfWords();
         sequence.PrintTotalLength();
-
+        //sequence.PrintUsedWords();
 
 
     }
