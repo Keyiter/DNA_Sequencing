@@ -5,14 +5,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class WordSet {
-
+    public int [][] coverTable;
     public List<String> wordSet;
-
+    public HashMap<Integer,String> wordMap;
     WordSet(String _fileName){
         wordSet = new ArrayList<String>();
         try {
@@ -20,12 +18,14 @@ public class WordSet {
             String line = null;
             BufferedReader bufferedReader =
                     new BufferedReader(fileReader);
-
+            Integer count=1;
             while((line = bufferedReader.readLine()) != null) {
                 wordSet.add(line);
+                wordMap.put(count,line);
+                count++;
             }
             bufferedReader.close();
-
+            prepareCoverTable();
         } catch(FileNotFoundException ex){
             System.out.println("Unable to open file " + _fileName);
         } catch (IOException ex){
@@ -33,6 +33,27 @@ public class WordSet {
         }
     }
 
+    private void prepareCoverTable(){
+        for (Map.Entry<Integer,String> pair:wordMap.entrySet()) {
+            String word=pair.getValue();
+            Integer indeks=pair.getKey();
+            for (Map.Entry<Integer,String> secondPair:wordMap.entrySet()){
+                String secondWord=secondPair.getValue();
+                Integer secondIndeks=secondPair.getKey();
+                if(secondIndeks!=indeks)
+                    coverTable[indeks][secondIndeks]=getCoverNumber(word,secondWord);
+            }
+        }
+    }
+    private int getCoverNumber(String word,String word2){
+        int length=word.length();
+        for(int i=1;i<length;i++){
+            if(word2.substring(0,length-1-i).equals(word.substring(i,length-1))){
+                return length-i;
+            }
+        }
+        return 0;
+    }
     public WordWeightPair getConnectionInfo(String word, int i){
         int conTemp = 0;
         int temp = 0;
