@@ -12,11 +12,8 @@ public class WordSet {
 
     public ArrayList<IndeksValue>[] coverLists;
     public List<String> wordSet;
-    public HashMap<Integer, String> wordMap;
-
     WordSet(String _fileName) {
         wordSet = new ArrayList<String>();
-        wordMap = new HashMap<>();
         coverLists=new ArrayList[500];
         try {
             FileReader fileReader = new FileReader(_fileName);
@@ -26,7 +23,6 @@ public class WordSet {
             Integer count = 1;
             while ((line = bufferedReader.readLine()) != null) {
                 wordSet.add(line);
-                wordMap.put(count, line);
                 count++;
             }
             bufferedReader.close();
@@ -39,12 +35,12 @@ public class WordSet {
     }
 
     private void prepareCoverTable() {
-        for (Map.Entry<Integer, String> pair : wordMap.entrySet()) {
-            String word = pair.getValue();
-            Integer indeks = pair.getKey();
-            for (Map.Entry<Integer, String> secondPair : wordMap.entrySet()) {
-                String secondWord = secondPair.getValue();
-                Integer secondIndeks = secondPair.getKey();
+        for (int i=0;i<wordSet.size();i++) {
+            String word = wordSet.get(i);
+            Integer indeks = i;
+            for (int o=0;o<wordSet.size();o++) {
+                String secondWord = wordSet.get(o);
+                Integer secondIndeks = o;
                 if (secondIndeks != indeks) {
                     if (coverLists[indeks] == null) {
                         coverLists[indeks] = new ArrayList<>();
