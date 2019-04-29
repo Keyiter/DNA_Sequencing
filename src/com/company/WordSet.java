@@ -1,6 +1,7 @@
 package com.company;
 
-import javax.imageio.IIOException;
+import javafx.collections.transformation.SortedList;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,48 +9,59 @@ import java.io.IOException;
 import java.util.*;
 
 public class WordSet {
-    public int [][] coverTable;
+
+    public ArrayList<IndeksValue>[] coverLists;
     public List<String> wordSet;
-    public HashMap<Integer,String> wordMap;
-    WordSet(String _fileName){
+    public HashMap<Integer, String> wordMap;
+
+    WordSet(String _fileName) {
         wordSet = new ArrayList<String>();
+        wordMap = new HashMap<>();
+        coverLists=new ArrayList[500];
         try {
             FileReader fileReader = new FileReader(_fileName);
             String line = null;
             BufferedReader bufferedReader =
                     new BufferedReader(fileReader);
-            Integer count=1;
-            while((line = bufferedReader.readLine()) != null) {
+            Integer count = 1;
+            while ((line = bufferedReader.readLine()) != null) {
                 wordSet.add(line);
-                wordMap.put(count,line);
+                wordMap.put(count, line);
                 count++;
             }
             bufferedReader.close();
             prepareCoverTable();
-        } catch(FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file " + _fileName);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println("Error reading file " + _fileName);
         }
     }
 
-    private void prepareCoverTable(){
-        for (Map.Entry<Integer,String> pair:wordMap.entrySet()) {
-            String word=pair.getValue();
-            Integer indeks=pair.getKey();
-            for (Map.Entry<Integer,String> secondPair:wordMap.entrySet()){
-                String secondWord=secondPair.getValue();
-                Integer secondIndeks=secondPair.getKey();
-                if(secondIndeks!=indeks)
-                    coverTable[indeks][secondIndeks]=getCoverNumber(word,secondWord);
+    private void prepareCoverTable() {
+        for (Map.Entry<Integer, String> pair : wordMap.entrySet()) {
+            String word = pair.getValue();
+            Integer indeks = pair.getKey();
+            for (Map.Entry<Integer, String> secondPair : wordMap.entrySet()) {
+                String secondWord = secondPair.getValue();
+                Integer secondIndeks = secondPair.getKey();
+                if (secondIndeks != indeks) {
+                    if (coverLists[indeks] == null) {
+                        coverLists[indeks] = new ArrayList<>();
+                    }
+                    coverLists[indeks].add(new IndeksValue(secondIndeks, getCoverNumber(word, secondWord)));
+                }
             }
+            Collections.sort(coverLists[indeks]);
+            Collections.reverse(coverLists[indeks]);
         }
     }
-    private int getCoverNumber(String word,String word2){
-        int length=word.length();
-        for(int i=1;i<length;i++){
-            if(word2.substring(0,length-1-i).equals(word.substring(i,length-1))){
-                return length-i;
+
+    private int getCoverNumber(String word, String word2) {
+        int length = word.length();
+        for (int i = 1; i < length; i++) {
+            if (word2.substring(0, length  - i).equals(word.substring(i, length ))) {
+                return length - i;
             }
         }
         return 0;
@@ -161,6 +173,26 @@ public class WordSet {
              retVal = new WordWeightPair(-1,-1,"");
 
         return  retVal;
+
+    }
+
+    private class IndeksValue implements Comparable<IndeksValue> {
+        private int indeks;
+        private int value;
+
+        IndeksValue(int indeks, int value) {
+            this.indeks = indeks;
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public int compareTo(IndeksValue other) {
+            return (this.value - other.getValue());
+        }
 
     }
 

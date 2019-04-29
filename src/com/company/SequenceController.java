@@ -16,6 +16,8 @@ public class SequenceController {
 
     public void MakeGreedySearch(int maxLength){
         Random random = new Random();
+
+        //wybiera losowe słowo z sekwencji jako pierwsze
         sequence.AddWord(wordSet.wordSet.get(random.nextInt(wordSet.wordSet.size())),0,0);
 
         boolean ret = true;
