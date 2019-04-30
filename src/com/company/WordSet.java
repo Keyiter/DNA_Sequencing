@@ -65,6 +65,7 @@ public class WordSet {
     public WordWeightPair getConnectionInfo(String word, int i){
         int conTemp = 0;
         int temp = 0;
+        int wordInd = wordSet.indexOf(word);
 
         for(int j=1;j<10;j++){
             if(wordSet.get(i).substring(0, 9 - j).equals(word.substring(j, 9))){
@@ -73,19 +74,17 @@ public class WordSet {
             }
         }
         int max =0;
-        for(int k=0;k < wordSet.size();k++){
-            temp = 0;
-            if(i != k)
-                for(int j=1;j<10;j++) {
-                    if (wordSet.get(i).substring(j, 9).equals(wordSet.get(k).substring(0, 9-j))) {
-                        temp += (10 - j);
-                        break;
-                    }
-                }
-            if(temp > max){
-                max = temp;
-            }
-        }
+       for(IndeksValue indx : coverLists[i]){
+           if(indx.getIndex() == wordInd )
+               continue;
+           temp = conTemp;
+           temp += indx.getValue();
+           if(temp > max){
+               max = temp;
+           }
+           if(max >= 18)
+               return new WordWeightPair(18,9, wordSet.get(indx.getIndex()));
+       }
 
         WordWeightPair retVal;
         if(conTemp >0)
@@ -103,7 +102,7 @@ public class WordSet {
         int max =0;
         int conMax =0;
         int index =0;
-
+        int wordInd = wordSet.indexOf(word);
         do {
 
             if(max > 0)
@@ -112,46 +111,35 @@ public class WordSet {
             max = 0;
             index = 0;
             found = false;
-            for(int i =0; i <wordSet.size();i++){
-                if(tabuList.contains(i) || notUniqueTabu.contains(i))
-                    continue;
 
+            for (IndeksValue indx : coverLists[wordInd]) {
                 int temp=0;
                 int conTemp =0;
 
-                for(int j=1;j<10;j++){
-                    if(wordSet.get(i).substring(0, 9 - j).equals(word.substring(j, 9))){
-                        temp = 10-j;
-                        conTemp = 10-j;
-                        found = true;
-                        break;
-                    }
-
-                }
-
-               if(max - 9 > temp)
+                if(tabuList.contains(indx.getIndex()) || notUniqueTabu.contains(indx.getIndex()))
                     continue;
-                for(int k=0;k < wordSet.size();k++){
+                temp = indx.getValue();
+                conTemp = indx.getValue();
+                found = true;
+
+                if(max - 9 > temp)
+                    continue;
+
+                for (IndeksValue indx2 : coverLists[indx.getIndex()]) {
+                    if(indx2.getIndex() == wordInd )
+                        continue;
                     temp = conTemp;
-                    if(i != k)
-                        for(int j=1;j<10;j++) {
-                            if (wordSet.get(i).substring(j, 9).equals(wordSet.get(k).substring(0, 9-j))) {
-                                temp += (10 - j);
-                                break;
-                            }
-                        }
+                    temp += indx2.getValue();
                     if(temp > max){
                         max = temp;
                         conMax = conTemp;
-                        index = i;
+                        index = indx.getIndex();
                     }
-                   if(max >= 18)
-                       return new WordWeightPair(18,9, wordSet.get(i));
+                    if(max >= 18)
+                        return new WordWeightPair(18,9, wordSet.get(indx.getIndex()));
                 }
-
-
-
             }
+
 
             if(probability<1){
                 Random random = new Random();
@@ -183,6 +171,10 @@ public class WordSet {
 
         public int getValue() {
             return value;
+        }
+
+        public int getIndex(){
+            return indeks;
         }
 
         @Override
