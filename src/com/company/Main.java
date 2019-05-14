@@ -30,8 +30,21 @@ public class Main {
         sequence.PrintNumberOfWords();
         sequence.PrintTotalLength();
         //sequence.PrintUsedWords();
+        System.out.println("Processing time: " + timeElapsed/1000.f);
 
 
+        start = System.currentTimeMillis();
+
+
+       sequence.heuristic(10000);
+
+
+        finish = System.currentTimeMillis();
+        timeElapsed = finish - start;
+        sequence.PrintUniqueWords();
+        sequence.PrintNumberOfWords();
+        sequence.PrintTotalLength();
+        System.out.println("Processing time: " + timeElapsed/1000.f);
     }
 
 }

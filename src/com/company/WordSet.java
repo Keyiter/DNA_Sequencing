@@ -160,6 +160,42 @@ public class WordSet {
 
     }
 
+    public IndeksValue drawnNextWord(Sequence temporarySequence,int maksBestWordToDraw) {
+        List<IndeksValue> drawnWords=new ArrayList<>();
+        for (IndeksValue indeksValue:coverLists[wordSet.indexOf(temporarySequence.getLastWord())] // sequence przechowuje liste stringow, apowinna dla ułatwienia obliczeń liste indeksow
+             ) {
+            if(temporarySequence.contains(wordSet.get(indeksValue.indeks))){
+                continue;
+            }
+            else{
+                drawnWords.add(indeksValue);
+                if(drawnWords.size()==maksBestWordToDraw) break;
+            }
+
+        }
+        return drawnWord(drawnWords);
+    }
+
+    private IndeksValue drawnWord(List<IndeksValue> drawnWords) {
+    int sum=0;
+    for (IndeksValue indeksValue:drawnWords
+             ) {
+            sum+=indeksValue.value;
+    }
+    int drawnNumber=getRandomIndex(sum);
+        for (IndeksValue indeksValue:drawnWords
+        ) {
+            if(drawnNumber<=indeksValue.value){
+                return indeksValue;
+            }
+            drawnNumber=-indeksValue.value;
+        }
+        return new IndeksValue(-1,0);  //nie wylosowano słowa żadnego
+    }
+    private int getRandomIndex(int bound) {
+        Random  random=new Random();
+        return random.nextInt(bound);
+    }
     private class IndeksValue implements Comparable<IndeksValue> {
         private int indeks;
         private int value;
