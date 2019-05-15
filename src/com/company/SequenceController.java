@@ -70,11 +70,11 @@ public class SequenceController {
     public void heuristic(int iterateCount,int startTemperature,int maxLength,int maksBestWordToDraw) {
         float cooler=(float)startTemperature/iterateCount;
         float temperature=startTemperature;
-        Sequence temporarySequence=this.sequence;
+        Sequence temporarySequence=new Sequence(this.sequence);
         for(int i=0;i<iterateCount;i++){
             temporarySequence=heuristicIteration(temperature-=cooler,temporarySequence,maxLength,maksBestWordToDraw);
         }
-        sequence=temporarySequence;
+        sequence=new Sequence(temporarySequence);
     }
 
     private Sequence heuristicIteration(float temperature,Sequence temporarySequence,int maxLength,int maksBestWordToDraw) {
@@ -116,5 +116,24 @@ public class SequenceController {
     private int getRandomIndex(int bound) {
         Random  random=new Random();
         return random.nextInt(bound);
+    }
+
+    public void test(){
+        Sequence seq1 = new Sequence();
+        Sequence seq2 = new Sequence();
+        seq1.AddWord(1,2,3);
+        seq1.AddWord(2,3,4);
+        seq2 = new Sequence(seq1);
+        //seq2 = seq1;
+        seq2.AddWord(3,4,5);
+        int max = seq1.getSequenceWordCount();
+        for(int i=0; i < max; i++){
+            System.out.println(wordSet.wordSet.get(seq1.getWord(i)));
+        }
+        System.out.println("");
+        int max2 = seq2.getSequenceWordCount();
+        for(int i=0; i < max2; i++){
+            System.out.println(wordSet.wordSet.get(seq2.getWord(i)));
+        }
     }
 }

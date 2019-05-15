@@ -31,7 +31,7 @@ public class Main {
         sequence.PrintTotalLength();
         //sequence.PrintUsedWords();
 
-
+       // sequence.test();
 
         start = System.currentTimeMillis();
 

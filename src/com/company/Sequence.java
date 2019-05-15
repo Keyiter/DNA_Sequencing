@@ -12,6 +12,22 @@ public class Sequence{
     int uniqueWords;
 
 
+    Sequence (Sequence seq){
+        words = new ArrayList<Integer>();
+        weight = new ArrayList<Integer>();
+        connections = new ArrayList<Integer>();
+        for(Integer val : seq.words){
+            this.words.add(val);
+        }
+        for(Integer val : seq.weight){
+            this.weight.add(val);
+        }
+        for(Integer val : seq.connections){
+            this.connections.add(val);
+        }
+        this.uniqueWords = seq.uniqueWords;
+    }
+
     Sequence(){
         words = new ArrayList<Integer>();
         weight = new ArrayList<Integer>();
