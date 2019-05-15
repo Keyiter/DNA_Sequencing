@@ -6,20 +6,20 @@ import java.util.List;
 import java.util.Set;
 
 public class Sequence{
-    List<String> words;
+    List<Integer> words;
     List<Integer> weight;
     List<Integer> connections;
     int uniqueWords;
 
 
     Sequence(){
-        words = new ArrayList<String>();
+        words = new ArrayList<Integer>();
         weight = new ArrayList<Integer>();
         connections = new ArrayList<Integer>();
         uniqueWords = 0;
     }
 
-    public void AddWord(String _word,int _weight, int _strength){
+    public void AddWord(Integer _word,int _weight, int _strength){
         if(!words.contains(_word))
             uniqueWords++;
         words.add(_word);
@@ -70,13 +70,13 @@ public class Sequence{
         CalculateUnique();
     }
 
-    public String getWord(int i){return  words.get(i);}
-    public String getLastWord() {return  words.get(words.size()-1);}
+    public Integer getWord(int i){return  words.get(i);}
+    public Integer getLastWord() {return  words.get(words.size()-1);}
     public Integer getWeigt(int i){return weight.get(i);}
 
     public Integer getSequenceSize(){return words.size();}
 
-    public boolean contains(String word){
+    public boolean contains(Integer word){
         return words.contains(word);
 
     }
@@ -93,8 +93,8 @@ public class Sequence{
 
     protected void CalculateUnique(){
         uniqueWords = words.size();
-        Set<String> appeared = new HashSet<>();
-        for (String item : words) {
+        Set<Integer> appeared = new HashSet<>();
+        for (Integer item : words) {
             if (!appeared.add(item)) {
                 uniqueWords--;
             }

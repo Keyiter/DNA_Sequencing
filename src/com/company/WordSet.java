@@ -62,11 +62,11 @@ public class WordSet {
         }
         return 0;
     }
-    public WordWeightPair getConnectionInfo(String word, int i){
+    public WordWeightPair getConnectionInfo(Integer wordIndeks, int i){
         int conTemp = 0;
         int temp = 0;
-        int wordInd = wordSet.indexOf(word);
-
+        int wordInd = wordIndeks;
+        String word=wordSet.get(wordIndeks);
         for(int j=1;j<10;j++){
             if(wordSet.get(i).substring(0, 9 - j).equals(word.substring(j, 9))){
                 conTemp = 10-j;
@@ -83,26 +83,26 @@ public class WordSet {
                max = temp;
            }
            if(max >= 18)
-               return new WordWeightPair(18,9, wordSet.get(indx.getIndex()));
+               return new WordWeightPair(18,9, indx.getIndex());
        }
 
         WordWeightPair retVal;
         if(conTemp >0)
-            retVal = new WordWeightPair(max+conTemp,conTemp,wordSet.get(i));
+            retVal = new WordWeightPair(max+conTemp,conTemp,i);
         else
-            retVal = new WordWeightPair(-1,-1,"");
+            retVal = new WordWeightPair(-1,-1,-1);
 
         return retVal;
     }
 
-    public WordWeightPair FindBestMatchingWord(String word, float probability, List<Integer> notUniqueTabu){
+    public WordWeightPair FindBestMatchingWord(Integer word, float probability, List<Integer> notUniqueTabu){
         List<Integer> tabuList = new ArrayList<>();
         float rand =0;
         boolean found;
         int max =0;
         int conMax =0;
         int index =0;
-        int wordInd = wordSet.indexOf(word);
+        int wordInd = word;
         do {
 
             if(max > 0)
@@ -136,7 +136,7 @@ public class WordSet {
                         index = indx.getIndex();
                     }
                     if(max >= 18)
-                        return new WordWeightPair(18,9, wordSet.get(indx.getIndex()));
+                        return new WordWeightPair(18,9, indx.getIndex());
                 }
             }
 
@@ -150,47 +150,79 @@ public class WordSet {
 
         WordWeightPair retVal;
         if(found)
-            retVal = new WordWeightPair(max,conMax, wordSet.get(index));
+            retVal = new WordWeightPair(max,conMax, index);
         else if(!tabuList.isEmpty())
-            retVal = new WordWeightPair(max/3,conMax, wordSet.get(tabuList.get(0)));
+            retVal = new WordWeightPair(max/3,conMax, tabuList.get(0));
         else
-             retVal = new WordWeightPair(-1,-1,"");
+             retVal = new WordWeightPair(-1,-1,-1);
 
         return  retVal;
 
     }
 
     public IndeksValue drawnNextWord(Sequence temporarySequence,int maksBestWordToDraw) {
-        List<IndeksValue> drawnWords=new ArrayList<>();
-        for (IndeksValue indeksValue:coverLists[wordSet.indexOf(temporarySequence.getLastWord())] // sequence przechowuje liste stringow, apowinna dla ułatwienia obliczeń liste indeksow
+        List<WordWeightPair> drawnWords=new ArrayList<>();
+        for (IndeksValue indeksValue:coverLists[temporarySequence.getLastWord()]
              ) {
-            if(temporarySequence.contains(wordSet.get(indeksValue.indeks))){
+            if(temporarySequence.contains(indeksValue.indeks)){
                 continue;
             }
             else{
-                drawnWords.add(indeksValue);
-                if(drawnWords.size()==maksBestWordToDraw) break;
+                IndeksValue secondWord=getSecondWord(indeksValue,temporarySequence);
+                WordWeightPair wordWeightPair=new WordWeightPair(secondWord.value+indeksValue.value,indeksValue.value,indeksValue.indeks);
+                if(drawnWords.size()<maksBestWordToDraw)
+                    drawnWords.add(wordWeightPair);
+                else{
+                    WordWeightPair weakest=getWeakest(drawnWords);
+                    if(weakest.weight<wordWeightPair.weight){
+                        drawnWords.remove(weakest);
+                        drawnWords.add(wordWeightPair);
+                        continue;
+                    }
+                    if(getWeakest(drawnWords).weight-indeksValue.value>=9) break;
+
+                }
             }
 
         }
         return drawnWord(drawnWords);
     }
 
-    private IndeksValue drawnWord(List<IndeksValue> drawnWords) {
-    int sum=0;
-    for (IndeksValue indeksValue:drawnWords
+    private WordWeightPair getWeakest(List<WordWeightPair> drawnWords) {
+        WordWeightPair weakestWordWeightPair=drawnWords.get(0);
+        for (WordWeightPair wordWeightPair:drawnWords
              ) {
-            sum+=indeksValue.value;
+            if(weakestWordWeightPair.weight>wordWeightPair.weight) {
+                weakestWordWeightPair=wordWeightPair;
+            }
+        }
+        return weakestWordWeightPair;
+    }
+
+    private IndeksValue getSecondWord(IndeksValue firstWord,Sequence temporarySequence) {
+        for (IndeksValue indeksValue: coverLists[firstWord.indeks]
+             ) {
+            if(indeksValue.indeks==firstWord.indeks) continue;
+            if(!temporarySequence.contains(indeksValue.indeks)) return indeksValue;
+        }
+        return new IndeksValue(-1,-1); //brak drugiego slowa
+    }
+
+    private WordWeightPair drawnWord(List<WordWeightPair> drawnWords) {
+    int sum=0;
+    for (WordWeightPair wordWeightPair:drawnWords
+             ) {
+            sum+=wordWeightPair.connectionStrength;
     }
     int drawnNumber=getRandomIndex(sum);
-        for (IndeksValue indeksValue:drawnWords
+        for (WordWeightPair wordWeightPair:drawnWords
         ) {
-            if(drawnNumber<=indeksValue.value){
-                return indeksValue;
+            if(drawnNumber<=wordWeightPair.connectionStrength){
+                return wordWeightPair;
             }
-            drawnNumber=-indeksValue.value;
+            drawnNumber=-wordWeightPair.connectionStrength;
         }
-        return new IndeksValue(-1,0);  //nie wylosowano słowa żadnego
+        return new WordWeightPair(-1,-1,-1);  //nie wylosowano słowa żadnego
     }
     private int getRandomIndex(int bound) {
         Random  random=new Random();

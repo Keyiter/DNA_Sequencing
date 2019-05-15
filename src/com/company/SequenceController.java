@@ -14,10 +14,9 @@ public class SequenceController {
     }
 
     public void MakeGreedySearch(int maxLength){
-        Random random = new Random();
-
         //wybiera losowe słowo z sekwencji jako pierwsze
-        sequence.AddWord(wordSet.wordSet.get(random.nextInt(wordSet.wordSet.size())),0,0);
+
+        sequence.AddWord(getRandomIndex(wordSet.wordSet.size()),0,0);
 
         boolean ret = true;
         while(sequence.getNumberOfWords() <= maxLength && ret) {
@@ -64,7 +63,7 @@ public class SequenceController {
     public void PrintUsedWords(){
         int max = sequence.getSequenceSize();
         for(int i=0; i < max; i++){
-            System.out.println(sequence.getWord(i));
+            System.out.println(wordSet.wordSet.get(sequence.getWord(i)));
         }
     }
 
