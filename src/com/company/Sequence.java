@@ -32,14 +32,14 @@ public class Sequence{
         words = words.subList(0,index);
         weight = weight.subList(0,index);
         connections = connections.subList(0,index);
-        CalculateUnique();
+
     }
 
     public void DropFromPlace(int _index){
         words = words.subList(0,_index);
         weight = weight.subList(0,_index);
         connections = connections.subList(0,_index);
-        CalculateUnique();
+
     }
 
     public void DropFromPlace(String _word,boolean toLeft){
@@ -54,7 +54,7 @@ public class Sequence{
             weight = weight.subList(0,index);
             connections = connections.subList(0,index);
         }
-        CalculateUnique();
+
     }
 
     public void DropFromPlace(int _index,boolean toLeft){
@@ -67,23 +67,23 @@ public class Sequence{
             weight = weight.subList(0,_index);
             connections = connections.subList(0,_index);
         }
-        CalculateUnique();
+
     }
 
     public Integer getWord(int i){return  words.get(i);}
     public Integer getLastWord() {return  words.get(words.size()-1);}
     public Integer getWeigt(int i){return weight.get(i);}
 
-    public Integer getSequenceSize(){return words.size();}
+    public Integer getSequenceWordCount(){return words.size();}
 
     public boolean contains(Integer word){
         return words.contains(word);
 
     }
 
-    public int getUniqueWords(){return uniqueWords;}
+    public int getUniqueWords(){CalculateUnique();return uniqueWords;}
 
-    public int getNumberOfWords(){
+    public int getSequenceNucleotidesCount(){
         int length = 0;
         for (int num: connections) {
             length += 10 - num ;

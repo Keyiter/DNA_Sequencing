@@ -19,7 +19,7 @@ public class SequenceController {
         sequence.AddWord(getRandomIndex(wordSet.wordSet.size()),0,0);
 
         boolean ret = true;
-        while(sequence.getNumberOfWords() <= maxLength && ret) {
+        while(sequence.getSequenceNucleotidesCount() <= maxLength && ret) {
             boolean unique= true;
             ArrayList<Integer> tabu = new ArrayList<Integer>();
             do {
@@ -37,7 +37,7 @@ public class SequenceController {
                 } else {
                     if (sequence.contains(foundWord.word)) {
                         unique = false;
-                        tabu.add(wordSet.wordSet.indexOf(foundWord.word));
+                        tabu.add(foundWord.word);
                     }
                     else {
                         sequence.AddWord(foundWord.word,foundWord.weight,foundWord.connectionStrength);
@@ -53,42 +53,64 @@ public class SequenceController {
     }
 
     public void PrintTotalLength(){
-        System.out.println("Total Length of sequence: " + sequence.getNumberOfWords());
+        System.out.println("Total Length of sequence: " + sequence.getSequenceNucleotidesCount());
     }
 
     public void PrintNumberOfWords(){
-        System.out.println("Total number of words: " + sequence.getSequenceSize());
+        System.out.println("Total number of words: " + sequence.getSequenceWordCount());
     }
 
     public void PrintUsedWords(){
-        int max = sequence.getSequenceSize();
+        int max = sequence.getSequenceWordCount();
         for(int i=0; i < max; i++){
             System.out.println(wordSet.wordSet.get(sequence.getWord(i)));
         }
     }
 
-    public void heuristic(int iterateCount,int startTemperature,int maxLength) {
+    public void heuristic(int iterateCount,int startTemperature,int maxLength,int maksBestWordToDraw) {
         float cooler=(float)startTemperature/iterateCount;
         float temperature=startTemperature;
         Sequence temporarySequence=this.sequence;
         for(int i=0;i<iterateCount;i++){
-            heuristicIteration(temperature-=cooler,temporarySequence,maxLength);
+            temporarySequence=heuristicIteration(temperature-=cooler,temporarySequence,maxLength,maksBestWordToDraw);
         }
+        sequence=temporarySequence;
     }
 
-    private void heuristicIteration(float temperature,Sequence temporarySequence,int maxLength) {
-        int drawnIndex=getRandomIndex(temporarySequence.getSequenceSize());
+    private Sequence heuristicIteration(float temperature,Sequence temporarySequence,int maxLength,int maksBestWordToDraw) {
+        int drawnIndex=getRandomIndex(temporarySequence.getSequenceWordCount());
 
         temporarySequence.DropFromPlace(drawnIndex); //metoda dropFromPlace za kazdym razem liczy unique word nie potrzebnie
 
-        buildSequence(temporarySequence,maxLength);
+       temporarySequence= buildSequence(temporarySequence,maxLength,maksBestWordToDraw);
+       return(chooseSequence(temperature,temporarySequence));
+
 
     }
 
-    private void buildSequence(Sequence temporarySequence,int maxLength) {
-        while(temporarySequence.getSequenceSize()<maxLength){
-         //   temporarySequence.AddWord -- wordSet.drawnNextWord(temporarySequence,6); konieczne zmienienie sequence zeby przechowywala indeksy
+    private Sequence chooseSequence(float temperature, Sequence temporarySequence) {
+        if(sequence.getSequenceWordCount()<temporarySequence.getSequenceWordCount()) return temporarySequence;
+        int sizeDifference=sequence.getSequenceWordCount()-temporarySequence.getSequenceWordCount();
+        if(lotery(temperature,sizeDifference)){
+            return temporarySequence;
         }
+        return sequence;
+    }
+
+    private boolean lotery(float temperature, int sizeDifference) {
+       // Random random=new Random();
+       // if(random.nextDouble()<(float) sizeDifference/temperature) return true;
+        return false;
+
+    }
+
+    private Sequence buildSequence(Sequence temporarySequence,int maxLength,int maksBestWordToDraw) {
+        while(temporarySequence.getSequenceNucleotidesCount()<maxLength){
+           WordWeightPair wordWeightPairToAdd =  wordSet.drawnNextWord(temporarySequence,maksBestWordToDraw);
+           if(wordWeightPairToAdd.word==-1) break; // nie znaleziono nast słowa
+           temporarySequence.AddWord(wordWeightPairToAdd.word,wordWeightPairToAdd.weight,wordWeightPairToAdd.connectionStrength);
+        }
+        return temporarySequence;
     }
 
     private int getRandomIndex(int bound) {

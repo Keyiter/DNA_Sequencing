@@ -160,8 +160,9 @@ public class WordSet {
 
     }
 
-    public IndeksValue drawnNextWord(Sequence temporarySequence,int maksBestWordToDraw) {
+    public WordWeightPair drawnNextWord(Sequence temporarySequence,int maksBestWordToDraw) {
         List<WordWeightPair> drawnWords=new ArrayList<>();
+        if(temporarySequence.getSequenceWordCount()==0) temporarySequence.AddWord(getRandomIndex(wordSet.size()),0,0);
         for (IndeksValue indeksValue:coverLists[temporarySequence.getLastWord()]
              ) {
             if(temporarySequence.contains(indeksValue.indeks)){
@@ -185,6 +186,7 @@ public class WordSet {
             }
 
         }
+        //losowanie słowa z tablicy
         return drawnWord(drawnWords);
     }
 

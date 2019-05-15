@@ -13,7 +13,7 @@ public class Main {
        // System.out.println("Insert File name: ");
         String filename = "data.txt"; //scan.nextLine();
        // System.out.println("Insert Max Sequence Length ");
-        int maxLength = 300; //scan.nextInt();
+        int maxLength = 200; //scan.nextInt();
 
         SequenceController sequence = new SequenceController(filename);
 
@@ -30,13 +30,14 @@ public class Main {
         sequence.PrintNumberOfWords();
         sequence.PrintTotalLength();
         //sequence.PrintUsedWords();
-        System.out.println("Processing time: " + timeElapsed/1000.f);
+
 
 
         start = System.currentTimeMillis();
 
-
-       sequence.heuristic(10000);
+//maksBestWordToDraw to liczba najlepszych słów z któych ma algorytm losować przy dobudowywaniu sekwencji
+        //maxLength to długość sekwencji maksymalna
+       sequence.heuristic(1000,100,maxLength,2);
 
 
         finish = System.currentTimeMillis();
