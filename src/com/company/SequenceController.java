@@ -72,9 +72,9 @@ public class SequenceController {
         float temperature=startTemperature;
         Sequence temporarySequence=new Sequence(this.sequence);
         for(int i=0;i<iterateCount;i++){
-            temporarySequence=heuristicIteration(temperature-=cooler,temporarySequence,maxLength,maksBestWordToDraw);
+            sequence=heuristicIteration(temperature-=cooler,temporarySequence,maxLength,maksBestWordToDraw);
         }
-        sequence=new Sequence(temporarySequence);
+
     }
 
     private Sequence heuristicIteration(float temperature,Sequence temporarySequence,int maxLength,int maksBestWordToDraw) {
@@ -94,12 +94,12 @@ public class SequenceController {
         if(lotery(temperature,sizeDifference)){
             return temporarySequence;
         }
-        return sequence;
+        return new Sequence(sequence);
     }
 
     private boolean lotery(float temperature, int sizeDifference) {
-       // Random random=new Random();
-       // if(random.nextDouble()<(float) sizeDifference/temperature) return true;
+        Random random=new Random();
+        if(random.nextDouble()<(float) sizeDifference/temperature) return true;
         return false;
 
     }

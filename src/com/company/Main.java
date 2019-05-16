@@ -37,7 +37,7 @@ public class Main {
 
 //maksBestWordToDraw to liczba najlepszych słów z któych ma algorytm losować przy dobudowywaniu sekwencji
         //maxLength to długość sekwencji maksymalna
-       sequence.heuristic(1000,100,maxLength,2);
+       sequence.heuristic(1000,100,maxLength,4);
 
 
         finish = System.currentTimeMillis();
@@ -46,6 +46,7 @@ public class Main {
         sequence.PrintNumberOfWords();
         sequence.PrintTotalLength();
         System.out.println("Processing time: " + timeElapsed/1000.f);
+        System.exit(0);
     }
 
 }
