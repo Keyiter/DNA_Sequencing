@@ -160,7 +160,7 @@ public class WordSet {
 
     }
 
-    public WordWeightPair drawnNextWord(Sequence temporarySequence,int maksBestWordToDraw) {
+    public WordWeightPair drawnNextWord(Sequence temporarySequence,int maksBestWordToDraw,int powNr) {
         List<WordWeightPair> drawnWords=new ArrayList<>();
         if(temporarySequence.getSequenceWordCount()==0) temporarySequence.AddWord(getRandomIndex(wordSet.size()),0,0);
         for (IndeksValue indeksValue:coverLists[temporarySequence.getLastWord()]
@@ -187,7 +187,7 @@ public class WordSet {
 
         }
         //losowanie słowa z tablicy
-        return drawnWord(drawnWords);
+        return drawnWord(drawnWords, powNr);
     }
 
     private WordWeightPair getWeakest(List<WordWeightPair> drawnWords) {
@@ -210,25 +210,35 @@ public class WordSet {
         return new IndeksValue(-1,-1); //brak drugiego slowa
     }
 
-    private WordWeightPair drawnWord(List<WordWeightPair> drawnWords) {
-    int sum=0;
+
+
+
+    private WordWeightPair drawnWord(List<WordWeightPair> drawnWords, int powNr) { if(drawnWords.isEmpty())
+            return new WordWeightPair(-1,-1,-1);  //nie wylosowano słowa żadnego
+    long sum=0;
     for (WordWeightPair wordWeightPair:drawnWords
              ) {
-            sum+=wordWeightPair.connectionStrength;
+            sum+=Math.pow(wordWeightPair.connectionStrength,powNr);
     }
-    int drawnNumber=getRandomIndex(sum);
+
+    int drawnNumber=getRandomIndex((int)(sum/(Math.pow(10,powNr-8)))) ;
         for (WordWeightPair wordWeightPair:drawnWords
         ) {
-            if(drawnNumber<=wordWeightPair.connectionStrength){
+            if(drawnNumber<=(Math.pow(wordWeightPair.connectionStrength,powNr))/(Math.pow(10,powNr-8))){
                 return wordWeightPair;
             }
-            drawnNumber=-wordWeightPair.connectionStrength;
+            drawnNumber=-(int)(Math.pow(wordWeightPair.connectionStrength,powNr)/(Math.pow(10,powNr-8)));
         }
-        return new WordWeightPair(-1,-1,-1);  //nie wylosowano słowa żadnego
+         return drawnWords.get(0);
     }
     private int getRandomIndex(int bound) {
         Random  random=new Random();
-        return random.nextInt(bound);
+        try {
+            return random.nextInt(bound);
+        }catch(Exception e) {
+            System.out.println("wordset error bound:" + bound + "   " + e);
+            return -1;
+        }
     }
     private class IndeksValue implements Comparable<IndeksValue> {
         private int indeks;

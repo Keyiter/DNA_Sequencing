@@ -7,10 +7,14 @@ import java.util.Random;
 public class SequenceController {
     WordSet wordSet;
     Sequence sequence;
-    List<Sequence> listOfNeighbor;
+    Sequence max;
     SequenceController(String filename){
         wordSet = new WordSet(filename);
         sequence = new Sequence();
+    }
+
+    public int GetFileLength(){
+        return wordSet.wordSet.size();
     }
 
     public void MakeGreedySearch(int maxLength){
@@ -46,18 +50,37 @@ public class SequenceController {
                 }
             }while(!unique);
         }
+        max = new Sequence( sequence);
     }
 
     public void PrintUniqueWords(){
-        System.out.println("Number of unique words: " + sequence.getUniqueWords());
+        //System.out.println( "Number of unique words: " + sequence.getUniqueWords());
+        System.out.println( "Number of max unique words: " + max.getUniqueWords());
     }
 
     public void PrintTotalLength(){
-        System.out.println("Total Length of sequence: " + sequence.getSequenceNucleotidesCount());
+        //System.out.println( "Total Length of sequence: " + sequence.getSequenceNucleotidesCount());
+        System.out.println( "Total max Length of sequence: " + max.getSequenceNucleotidesCount());
     }
 
     public void PrintNumberOfWords(){
-        System.out.println("Total number of words: " + sequence.getSequenceWordCount());
+        //System.out.println( "Total number of words: " + sequence.getSequenceWordCount());
+        System.out.println( "Total max number of words: " + max.getSequenceWordCount());
+    }
+
+    public String GetUniqueWords(){
+        //System.out.println( "Number of unique words: " + sequence.getUniqueWords());
+        return ("Number of max unique words: " + max.getUniqueWords());
+    }
+
+    public String GetTotalLength(){
+        //System.out.println( "Total Length of sequence: " + sequence.getSequenceNucleotidesCount());
+        return ( "Total max Length of sequence: " + max.getSequenceNucleotidesCount());
+    }
+
+    public String GetNumberOfWords(){
+        //System.out.println( "Total number of words: " + sequence.getSequenceWordCount());
+        return ( "Total max number of words: " + max.getSequenceWordCount());
     }
 
     public void PrintUsedWords(){
@@ -68,45 +91,60 @@ public class SequenceController {
     }
 
     public void heuristic(int iterateCount,int startTemperature,int maxLength,int maksBestWordToDraw) {
-        float cooler=(float)startTemperature/iterateCount;
+        float cooler=(float)startTemperature/iterateCount ;
         float temperature=startTemperature;
         Sequence temporarySequence=new Sequence(this.sequence);
+        max = new Sequence(sequence);
+        float powNr = 2;
         for(int i=0;i<iterateCount;i++){
-            sequence=heuristicIteration(temperature-=cooler,temporarySequence,maxLength,maksBestWordToDraw);
+            if(i % (iterateCount/16) == 0)
+                powNr ++;
+            cooler *= 1 + (iterateCount*(0.0001/iterateCount));
+            sequence=heuristicIteration(temperature-=cooler ,startTemperature,temporarySequence,maxLength,maksBestWordToDraw,(int)powNr);
+
+            if(sequence.getUniqueWords() > max.getUniqueWords())
+                max = new Sequence(sequence);
+
+
+            if(i % (iterateCount/5) ==0) {
+                System.out.println("Iteration: " + i + " current Unique words: " + sequence.getUniqueWords());
+               // System.out.println(temperature);
+            }
         }
 
     }
 
-    private Sequence heuristicIteration(float temperature,Sequence temporarySequence,int maxLength,int maksBestWordToDraw) {
-        int drawnIndex=getRandomIndex(temporarySequence.getSequenceWordCount());
+    private Sequence heuristicIteration(float temperature,float startTemp,Sequence temporarySequence,int maxLength,int maksBestWordToDraw, int powNr) {
+            int drawnIndex = getRandomIndex(temporarySequence.getSequenceWordCount());
 
-        temporarySequence.DropFromPlace(drawnIndex); //metoda dropFromPlace za kazdym razem liczy unique word nie potrzebnie
+            temporarySequence.DropFromPlace(drawnIndex); //metoda dropFromPlace za kazdym razem liczy unique word nie potrzebnie
 
-       temporarySequence= buildSequence(temporarySequence,maxLength,maksBestWordToDraw);
-       return(chooseSequence(temperature,temporarySequence));
+       temporarySequence= buildSequence(temporarySequence,maxLength,maksBestWordToDraw,powNr);
+       return(chooseSequence(temperature,startTemp,temporarySequence));
 
 
     }
 
-    private Sequence chooseSequence(float temperature, Sequence temporarySequence) {
+    private Sequence chooseSequence(float temperature,float startTemp, Sequence temporarySequence) {
         if(sequence.getSequenceWordCount()<temporarySequence.getSequenceWordCount()) return temporarySequence;
         int sizeDifference=sequence.getSequenceWordCount()-temporarySequence.getSequenceWordCount();
-        if(lotery(temperature,sizeDifference)){
-            return temporarySequence;
+
+        if(lotery(temperature,startTemp,sizeDifference) || sizeDifference <= 0){
+            return new Sequence(temporarySequence);
         }
         return new Sequence(sequence);
     }
 
-    private boolean lotery(float temperature, int sizeDifference) {
+    private boolean lotery(float temperature,float startTemp, int sizeDifference) {
         Random random=new Random();
-        if(random.nextDouble()<(float) sizeDifference/temperature) return true;
+        if(random.nextDouble() * startTemp <(float) temperature/sizeDifference) return true;
         return false;
 
     }
 
-    private Sequence buildSequence(Sequence temporarySequence,int maxLength,int maksBestWordToDraw) {
+    private Sequence buildSequence(Sequence temporarySequence,int maxLength,int maksBestWordToDraw,int powNr) {
         while(temporarySequence.getSequenceNucleotidesCount()<maxLength){
-           WordWeightPair wordWeightPairToAdd =  wordSet.drawnNextWord(temporarySequence,maksBestWordToDraw);
+           WordWeightPair wordWeightPairToAdd =  wordSet.drawnNextWord(temporarySequence,maksBestWordToDraw,powNr);
            if(wordWeightPairToAdd.word==-1) break; // nie znaleziono nast słowa
            temporarySequence.AddWord(wordWeightPairToAdd.word,wordWeightPairToAdd.weight,wordWeightPairToAdd.connectionStrength);
         }
@@ -115,7 +153,12 @@ public class SequenceController {
 
     private int getRandomIndex(int bound) {
         Random  random=new Random();
-        return random.nextInt(bound);
+        try {
+            return random.nextInt(bound);
+        }catch (Exception e){
+            System.out.println("In SesContrl " + e);
+            return -1;
+        }
     }
 
     public void test(){

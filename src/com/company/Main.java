@@ -9,6 +9,7 @@ public class Main {
 
 
     public static void main(String[] args) {
+        /*
         Scanner scan = new Scanner(System.in);
        // System.out.println("Insert File name: ");
         String filename = "data.txt"; //scan.nextLine();
@@ -24,7 +25,7 @@ public class Main {
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
 
-        System.out.println("Processing time: " + timeElapsed/1000.f);
+        System.out.println("Processing time of greedy : " + timeElapsed/1000.f);
 
         sequence.PrintUniqueWords();
         sequence.PrintNumberOfWords();
@@ -37,16 +38,24 @@ public class Main {
 
 //maksBestWordToDraw to liczba najlepszych słów z któych ma algorytm losować przy dobudowywaniu sekwencji
         //maxLength to długość sekwencji maksymalna
-       sequence.heuristic(1000,100,maxLength,4);
+       sequence.heuristic(5000,100,maxLength,4);
 
 
         finish = System.currentTimeMillis();
         timeElapsed = finish - start;
+        System.out.println("");
         sequence.PrintUniqueWords();
         sequence.PrintNumberOfWords();
         sequence.PrintTotalLength();
-        System.out.println("Processing time: " + timeElapsed/1000.f);
+        System.out.println("Processing time of heuristic: " + timeElapsed/1000.f);
         System.exit(0);
+        */
+
+        TestController test = new TestController();
+        test.MakeFirstTest();
+        //test.MakeSecondTest();
+        //test.MakeThirdTest();
+        //test.MakeForthTest();
     }
 
 }
