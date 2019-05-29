@@ -97,7 +97,7 @@ public class SequenceController {
         max = new Sequence(sequence);
         float powNr = 2;
         for(int i=0;i<iterateCount;i++){
-            if(i % (iterateCount/16) == 0)
+            if(i % (iterateCount/4) == 0)
                 powNr ++;
             cooler *= 1 + (iterateCount*(0.0001/iterateCount));
             sequence=heuristicIteration(temperature-=cooler ,startTemperature,temporarySequence,maxLength,maksBestWordToDraw,(int)powNr);
@@ -115,8 +115,14 @@ public class SequenceController {
     }
 
     private Sequence heuristicIteration(float temperature,float startTemp,Sequence temporarySequence,int maxLength,int maksBestWordToDraw, int powNr) {
-            int drawnIndex = getRandomIndex(temporarySequence.getSequenceWordCount());
-
+            ArrayList<Integer> connections = new ArrayList<>();
+            for(int i =0; i < temporarySequence.connections.size();i++){
+                for(int j = 0; j < 10- temporarySequence.connections.get(i); j++){
+                    connections.add(i);
+                }
+            }
+            int drawnIndex = connections.get(getRandomIndex(connections.size()));
+            //int drawnIndex = getRandomIndex(temporarySequence.words.size());
             temporarySequence.DropFromPlace(drawnIndex); //metoda dropFromPlace za kazdym razem liczy unique word nie potrzebnie
 
        temporarySequence= buildSequence(temporarySequence,maxLength,maksBestWordToDraw,powNr);

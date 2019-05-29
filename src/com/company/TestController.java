@@ -39,7 +39,7 @@ public class TestController {
                 printWriter.println("");
 
                  start = System.currentTimeMillis();
-                sequence.heuristic(5000,100,seqLength,4);
+                sequence.heuristic(500,100,seqLength,4);
 
                 finish = System.currentTimeMillis();
                 timeElapsed = finish - start;

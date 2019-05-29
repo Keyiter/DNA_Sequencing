@@ -9,7 +9,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        /*
+/*
         Scanner scan = new Scanner(System.in);
        // System.out.println("Insert File name: ");
         String filename = "data.txt"; //scan.nextLine();
@@ -49,8 +49,8 @@ public class Main {
         sequence.PrintTotalLength();
         System.out.println("Processing time of heuristic: " + timeElapsed/1000.f);
         System.exit(0);
-        */
 
+*/
         TestController test = new TestController();
         test.MakeFirstTest();
         //test.MakeSecondTest();

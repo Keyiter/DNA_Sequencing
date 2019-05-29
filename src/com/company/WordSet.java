@@ -213,30 +213,25 @@ public class WordSet {
 
 
 
-    private WordWeightPair drawnWord(List<WordWeightPair> drawnWords, int powNr) { if(drawnWords.isEmpty())
+    private WordWeightPair drawnWord(List<WordWeightPair> drawnWords, int powNr) {
+        if(drawnWords.isEmpty())
             return new WordWeightPair(-1,-1,-1);  //nie wylosowano słowa żadnego
-    long sum=0;
-    for (WordWeightPair wordWeightPair:drawnWords
-             ) {
-            sum+=Math.pow(wordWeightPair.connectionStrength,powNr);
-    }
 
-    int drawnNumber=getRandomIndex((int)(sum/(Math.pow(10,powNr-8)))) ;
-        for (WordWeightPair wordWeightPair:drawnWords
-        ) {
-            if(drawnNumber<=(Math.pow(wordWeightPair.connectionStrength,powNr))/(Math.pow(10,powNr-8))){
-                return wordWeightPair;
-            }
-            drawnNumber=-(int)(Math.pow(wordWeightPair.connectionStrength,powNr)/(Math.pow(10,powNr-8)));
+        for (int i =0; i <drawnWords.size()-1;i++){
+            int sum=(int)(Math.pow(drawnWords.get(i).connectionStrength,powNr+1)+Math.pow(drawnWords.get(i+1).connectionStrength,powNr));
+            int drawnNumber=getRandomIndex(sum) ;
+            if( drawnNumber <= Math.pow(drawnWords.get(i).connectionStrength,powNr+1))
+                return drawnWords.get(i);
         }
-         return drawnWords.get(0);
+           // System.out.println("wybrano najgorszy " + drawnWords.get(drawnWords.size()-1).connectionStrength);
+            return drawnWords.get(drawnWords.size()-1);
     }
     private int getRandomIndex(int bound) {
         Random  random=new Random();
         try {
             return random.nextInt(bound);
-        }catch(Exception e) {
-            System.out.println("wordset error bound:" + bound + "   " + e);
+        }catch(Exception e){
+            System.out.println("Word set Ex  " + bound + "  " + e);
             return -1;
         }
     }
